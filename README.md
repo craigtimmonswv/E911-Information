@@ -5,6 +5,7 @@ This will pull the information:<br>
 &#8226; Emergency Calling Policies<br>
 &#8226; Emergency Call Routing Policies<br>
 &#8226; Tenant Network Site Details (civic address)<br>
+&#8226; Trusted IPs<br>
 &#8226; LIS Location<br>
 &#8226; LIS Network<br>
 &#8226; LIS WAP - Wireless BSSIDs<br>
