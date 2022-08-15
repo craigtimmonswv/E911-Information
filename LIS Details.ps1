@@ -206,8 +206,22 @@ Function Get-LISDetails
             $tabname = "LIS Port"
             Write-DataToExcel $filelocation  $details $tabname
             
-            #Get Auto Attendant Details
-            Write-Host "Getting Auto Attendant Details"
+            #Trusted IPs
+            $trustedIPs = Get-CsTenantTrustedIPAddress
+            $Details = @()
+            Foreach ($IP in $TrustedIPs)
+                {
+                $detail = New-Object PSObject
+                $detail | Add-Member NoteProperty -Name "Identity" -Value $IP.Identity
+                $detail | Add-Member NoteProperty -Name "MaskBits" -Value $IP.MaskBits
+                $detail | Add-Member NoteProperty -Name "Description" -Value $IP.Description
+                $detail | Add-Member NoteProperty -Name "Description" -Value $IP.Description
+                $Details += $detail
+            }
+            $tabname = "Trusted IPs"
+            Write-DataToExcel $filelocation  $details $tabname
+
+            
 }
 cls
 Write-Host "This is will create an Excel Spreadsheet.  Make sure to enter the file name with .xlsx"
