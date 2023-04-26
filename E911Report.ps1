@@ -20,9 +20,7 @@ It will create the following tabs in the spreadsheet.
     Tenant Network Site Details
     Emergency Calling Policies
     Emergency Call Routing Policies
-
 #>
-
 
 Function Write-DataToExcel
     {
@@ -206,11 +204,11 @@ Function Write-NetworkSubnetDetails
         foreach ($subnet in $subnets)
         {
             $detail = New-Object PSObject
-            $detail | add-Member -MemberType NoteProperty -Name "Identity" -Value $subnets.Identity
-            $detail | add-Member -MemberType NoteProperty -Name "Description" -Value $subnets.Description
-            $detail | add-Member -MemberType NoteProperty -Name "NetworkSiteID" -Value $subnets.NetworkSiteID
-            $detail | add-Member -MemberType NoteProperty -Name "SubnetID" -Value $subnets.SubnetID
-            $detail | add-Member -MemberType NoteProperty -Name "MaskBits" -Value $subnets.MaskBits
+            $detail | add-Member -MemberType NoteProperty -Name "Identity" -Value $subnet.Identity
+            $detail | add-Member -MemberType NoteProperty -Name "Description" -Value $subnet.Description
+            $detail | add-Member -MemberType NoteProperty -Name "NetworkSiteID" -Value $subnet.NetworkSiteID
+            $detail | add-Member -MemberType NoteProperty -Name "SubnetID" -Value $subnet.SubnetID
+            $detail | add-Member -MemberType NoteProperty -Name "MaskBits" -Value $subnet.MaskBits
             $Details += $detail
         }
     }
