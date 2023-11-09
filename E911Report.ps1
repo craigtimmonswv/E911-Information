@@ -20,6 +20,20 @@ It will create the following tabs in the spreadsheet.
     Tenant Network Site Details
     Emergency Calling Policies
     Emergency Call Routing Policies
+
+Additions
+
+General
+    -Added color coded tabs. 
+
+BSSIDs
+    - changed description to WAP-Description
+    - Added Location Description
+
+Added to tenant network subnet section
+    - emergency calling policy with associated subnet
+    - emergency call routing policy with associated subnet
+    - subnet masks to tenant network subnet section
 #>
 
 Function Write-DataToExcel
@@ -193,6 +207,7 @@ Function Write-NetworkRegion
     Write-DataToExcel $filelocation $Details $tabname $tabcolor
 }
 
+
 Function Write-NetworkSubnetDetails
 { 
     param ($filelocation, $logfile)  
@@ -204,11 +219,35 @@ Function Write-NetworkSubnetDetails
         foreach ($subnet in $subnets)
         {
             $detail = New-Object PSObject
-            $detail | add-Member -MemberType NoteProperty -Name "Identity" -Value $subnet.Identity
             $detail | add-Member -MemberType NoteProperty -Name "Description" -Value $subnet.Description
+            $detail | add-Member -MemberType NoteProperty -Name "Subnet" -Value $subnet.SubnetID
+            $detail | add-Member -MemberType NoteProperty -Name "Masks" -Value $subnet.MaskBits
             $detail | add-Member -MemberType NoteProperty -Name "NetworkSiteID" -Value $subnet.NetworkSiteID
-            $detail | add-Member -MemberType NoteProperty -Name "SubnetID" -Value $subnet.SubnetID
-            $detail | add-Member -MemberType NoteProperty -Name "MaskBits" -Value $subnet.MaskBits
+            $site = Get-CsTenantNetworkSite -Identity $subnet.NetworkSiteID
+            try {
+                $ECP = Get-CsTeamsEmergencyCallingPolicy -Identity $site.EmergencyCallingPolicy -ErrorAction Stop
+                $ECPIdentity = $ecp.Identity
+                $ecpXtrnLocationLookupMode = $ecp.ExternalLocationLookupMode
+                $ecpNotificationMode = $ecp.NotificationMode
+                $ecpnotificationgroup = $ecp.NotificationGroup
+                $ecpNotificationDialOutNumber = $ecp.NotificationDialOutNumber
+            
+            }
+            catch {}
+            if (!($ecp))
+            {
+                $ECPIdentity = "Null"
+                $ecpXtrnLocationLookupMode = "Null"
+                $ecpNotificationMode = "Null"
+                $ecpnotificationgroup = "Null"
+                $ecpNotificationDialOutNumber = "Null"
+
+        }
+            $detail | add-Member -MemberType NoteProperty -Name "ECP Identity" -Value $ECPIdentity
+            $detail | add-Member -MemberType NoteProperty -Name "External Location Lookup" -Value $ecpXtrnLocationLookupMode
+            $detail | add-Member -MemberType NoteProperty -Name "Notification Mode" -Value $ecpNotificationMode
+            $detail | add-Member -MemberType NoteProperty -Name "Notification Group" -Value $ecpnotificationgroup
+            $detail | add-Member -MemberType NoteProperty -Name "Notification Dial OutNumber" -Value $ecpNotificationDialOutNumber
             $Details += $detail
         }
     }
@@ -339,9 +378,10 @@ Function Write-BSSIDs
         {
             $detail = New-Object PSObject
             $detail | Add-Member NoteProperty -Name "BSSID" -Value $WAP.BSSID
-            $detail | Add-Member NoteProperty -Name "Description" -Value $WAP.Description
+            $detail | Add-Member NoteProperty -Name "WAP-Description" -Value $WAP.Description
             $WAPloc = Get-CsOnlineLisLocation -LocationId $WAP.LocationId
             $detail | Add-Member NoteProperty -Name "Location" -Value $WAPloc.location
+            $detail | Add-Member NoteProperty -Name "Location Description" -Value $WAPloc.description
             $detail | Add-Member NoteProperty -Name "City" -Value $WAPloc.city
             $Details += $detail
         }
